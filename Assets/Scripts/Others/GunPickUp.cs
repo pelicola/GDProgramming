@@ -4,7 +4,7 @@ using JetBrains.Annotations;
 using TMPro;
 using UnityEngine;
 
-public class AmmoPickUp : MonoBehaviour
+public class GunPickUp : MonoBehaviour
 {   
     public Player player;  
     public void Start(){
@@ -13,7 +13,7 @@ public class AmmoPickUp : MonoBehaviour
     public void OnCollisionEnter(Collision other){
 
         if(other.gameObject.tag == "User"){
-            player.AddAmmoForPickUp(); 
+            player.gunChange(); 
             Destroy(gameObject);
             Debug.Log("Broken");
 

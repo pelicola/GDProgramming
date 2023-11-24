@@ -9,12 +9,23 @@ using TMPro;
 
 public class Player : MonoBehaviour
 {
-    public TextMeshProUGUI ammoInfoText, totalAmmoText, noAmmoText; 
+    public enum Features
+    {
+        InfiniteAmmo, 
+        GodSpeed, 
+        NPCMode, //Cannot Move 
+        OriginalGame
+    }
+    public TextMeshProUGUI ammoInfoText, totalAmmoText, noAmmoText, NpcText; 
+    public Features features; 
     [SerializeField, Range (1,20)] private float mouseSensX; 
     [SerializeField, Range (1,20)] private float mouseSensY; 
     [SerializeField, Range (-90,0)] private float minViewAngle; 
     [SerializeField, Range (0,90)] private float maxViewAngle; 
     [SerializeField] private Transform followTarget; 
+
+    AudioSource m_shootingSound; 
+    AudioSource m_reloadingSound; 
     
     private Vector2 currentAngle; 
 
@@ -39,6 +50,7 @@ public class Player : MonoBehaviour
         InputManager.InIt(myPlayer:this);
         InputManager.SetGameControls();
         rb = GetComponent<Rigidbody>();
+        m_shootingSound = GetComponent<AudioSource>(); 
     }
 
     // Update is called once per frame
@@ -61,6 +73,37 @@ public class Player : MonoBehaviour
         totalAmmoText.text = " " + currentAmmo; 
         transform.position += transform.rotation* (speed * Time.deltaTime * _moveDirection);
         CheckGround(); 
+
+        if(Input.GetKeyDown(KeyCode.F)){
+            Debug.Log("Key pressed");
+            ChangeEFeature();
+        }
+
+        if (features == Features.GodSpeed)
+        {
+            speed = 50; 
+        }
+        else if(features == Features.InfiniteAmmo){
+            currentClip = 1000000; 
+            maxClipSize = 1000000; 
+        }
+        else if(features == Features.NPCMode){
+            speed = 0; 
+            NpcText.gameObject.SetActive(true);
+            ammoInfoText.gameObject.SetActive(false); 
+            totalAmmoText.gameObject.SetActive(false); 
+        }
+    }
+
+    private void ChangeEFeature(){
+        int currentIndex = (int)features; 
+        currentIndex++;
+        if (currentIndex >= System.Enum.GetValues(typeof(Features)).Length)
+        {
+            currentIndex = 0;
+        }
+        features = (Features)currentIndex;
+        Debug.Log("Feature changed to: " + features);
     }
 
 
@@ -111,12 +154,23 @@ public class Player : MonoBehaviour
 
     }
 
+    public void SFX(){
+        m_shootingSound.Play(); 
+    }
 
     public void Reload(){
         int reloadAmount = maxClipSize - currentClip; 
         reloadAmount = Mathf.Min(maxClipSize - currentClip, currentAmmo); 
         currentClip += reloadAmount; 
         currentAmmo -= reloadAmount; 
+    }
+
+    public void AddAmmoForPickUp(){ 
+        currentAmmo = currentAmmo + 10; 
+    }
+
+    public void gunChange(){
+        projectileForce = (float)(projectileForce * 0.01); 
     }
 
 }

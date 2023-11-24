@@ -24,6 +24,7 @@ public static class InputManager
         _gamecontrols.InGame.Shooting.started += ctx => {
            
             myPlayer.Shoot();
+            myPlayer.SFX(); 
             Debug.Log("Shooting");
         };
 
@@ -34,7 +35,7 @@ public static class InputManager
 
         _gamecontrols.InGame.Reload.performed += ctx => {
             
-            myPlayer.Reload(); 
+            myPlayer.Reload();   
             Debug.Log("Reloading");
         };
 
